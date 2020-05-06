@@ -156,61 +156,57 @@ if __name__ == '__main__':
 
     if filter_injection_samples:
         
-	print('Generating SNR time-series for injection samples...', end=' ')
+        print('Generating SNR time-series for injection samples...', end=' ')
 
         # Loop over all detectors
         for i, (det_name, det_string) in enumerate([('H1', 'h1_strain'),
                                                     ('L1', 'l1_strain'),
                                                     ('V1', 'v1_strain')]):
 
-		# Use a tqdm context manager for the progress bar
-		tqdm_args = dict(total=n_samples, ncols=80, unit='sample', desc=det_name)
-		with tqdm(**tqdm_args) as progressbar:
+            # Use a tqdm context manager for the progress bar
+            tqdm_args = dict(total=n_samples, ncols=80, unit='sample', desc=det_name)
+            with tqdm(**tqdm_args) as progressbar:
 
-		    # Loop over all strain samples in each detector
-		    for i in range(n_samples):
+                # Loop over all strain samples in each detector
+                for i in range(n_samples):
 
-			# Read in detector strain data for specific sample
-		        strain_sample=np.array(df['injection_samples'][det_string][i])
+                    # Read in detector strain data for specific sample
+                    strain_sample=np.array(df['injection_samples'][det_string][i])
 
-		        # Get injection parameters
-			for param in param_list:
-				param_dict['injections'][param] = df['injection_parameters'][param][i]
+                    # Get injection parameters
+                    for param in param_list:
+                        param_dict['injections'][param] = df['injection_parameters'][param][i]
 
-		        # Convert sample to PyCBC time series
-		        strain_time_series=TimeSeries(strain_sample,
-		                                            delta_t=delta_t,
-		                                            epoch=0,
-		                                            dtype=None,
-		                                            copy=True)
-		        # Convert sample to PyCBC frequency series 
-		        strain_freq_series=strain_time_series.to_frequencyseries()
+                    # Convert sample to PyCBC time series
+                    strain_time_series=TimeSeries(strain_sample, delta_t=delta_t,
+                                                  epoch=0, dtype=None, copy=True)
+                    # Convert sample to PyCBC frequency series 
+                    strain_freq_series=strain_time_series.to_frequencyseries()
 
-		        # Generate optimal matched filtering template
-			template_hp, template_hc=get_td_waveform(**param_dict['injections'])
+                    # Generate optimal matched filtering template
+                    template_hp, template_hc=get_td_waveform(**param_dict['injections'])
 
-		        # Convert template to PyCBC frequency series
-			template_freq_series_hp=template_hp.to_frequencyseries(
-						delta_f=strain_freq_series.delta_f)
+                    # Convert template to PyCBC frequency series
+                    template_freq_series_hp=template_hp.to_frequencyseries(
+                                                    delta_f=strain_freq_series.delta_f)
 
-		        # Resize template to work with the sample
-		        template_freq_series_hp.resize(len(strain_freq_series))
+                    # Resize template to work with the sample
+                    template_freq_series_hp.resize(len(strain_freq_series))
 
-		        # Compute SNR time-series from optimal matched filtering template
-		        snr_series = matched_filter(template_freq_series_hp,
-		                                       strain_freq_series.astype(complex),
-		                                       psd=None,
-		                                       low_frequency_cutoff=f_low)
+                    # Compute SNR time-series from optimal matched filtering template
+                    snr_series = matched_filter(template_freq_series_hp,
+                                                strain_freq_series.astype(complex),
+                                                psd=None, low_frequency_cutoff=f_low)
 
-			# Save generated SNR time-series 
-		        snr_samples['injection_snr_samples'][det_string][i]=np.array(abs(snr_series))
+                    # Save generated SNR time-series 
+                    snr_samples['injection_snr_samples'][det_string][i]=np.array(abs(snr_series))
 
-			# Save parameters used for generating template
-			for param in injection_parameters.keys():
-				injection_parameters[param][i]= param_dict['injections'][param]
+                    # Save parameters used for generating template
+                    for param in injection_parameters.keys():
+                        injection_parameters[param][i]= param_dict['injections'][param]
 
-			# Update the progress bar based on the number of results
-			progressbar.update(i+1 - progressbar.n)
+                    # Update the progress bar based on the number of results
+                    progressbar.update(i+1 - progressbar.n)
 
 	print('Done!')
 
@@ -249,30 +245,30 @@ if __name__ == '__main__':
     subgrp13 = grp2.create_group('injection_snr')
 
     for i in range(len(snr_samples['injection_snr_samples']['h1_strain'])):
-	subgrp1.create_dataset(str(i),data=snr_samples['injection_snr_samples']['h1_strain'][i])
-	subgrp2.create_dataset(str(i),data=snr_samples['injection_snr_samples']['l1_strain'][i])
-	subgrp3.create_dataset(str(i),data=snr_samples['injection_snr_samples']['v1_strain'][i])
+        subgrp1.create_dataset(str(i),data=snr_samples['injection_snr_samples']['h1_strain'][i])
+        subgrp2.create_dataset(str(i),data=snr_samples['injection_snr_samples']['l1_strain'][i])
+        subgrp3.create_dataset(str(i),data=snr_samples['injection_snr_samples']['v1_strain'][i])
 
-	subgrp4.create_dataset(str(i),data=
-				injection_parameters['mass1'][i])
-	subgrp5.create_dataset(str(i),data=
-				injection_parameters['mass2'][i])
-	subgrp6.create_dataset(str(i),data=
-				injection_parameters['spin1z'][i])
-	subgrp7.create_dataset(str(i),data=
-				injection_parameters['spin2z'][i])
-	subgrp8.create_dataset(str(i),data=
-				injection_parameters['ra'][i])
-	subgrp9.create_dataset(str(i),data=
-				injection_parameters['dec'][i])
-	subgrp10.create_dataset(str(i),data=
-				injection_parameters['coa_phase'][i])
-	subgrp11.create_dataset(str(i),data=
-				injection_parameters['inclination'][i])
-	subgrp12.create_dataset(str(i),data=
-				injection_parameters['polarization'][i])
-	subgrp13.create_dataset(str(i),data=
-				injection_parameters['injection_snr'][i])
+        subgrp4.create_dataset(str(i),data=
+                               injection_parameters['mass1'][i])
+        subgrp5.create_dataset(str(i),data=
+                               injection_parameters['mass2'][i])
+        subgrp6.create_dataset(str(i),data=
+                               injection_parameters['spin1z'][i])
+        subgrp7.create_dataset(str(i),data=
+                               injection_parameters['spin2z'][i])
+        subgrp8.create_dataset(str(i),data=
+                               injection_parameters['ra'][i])
+        subgrp9.create_dataset(str(i),data=
+                               injection_parameters['dec'][i])
+        subgrp10.create_dataset(str(i),data=
+                               injection_parameters['coa_phase'][i])
+        subgrp11.create_dataset(str(i),data=
+                               injection_parameters['inclination'][i])
+        subgrp12.create_dataset(str(i),data=
+                               injection_parameters['polarization'][i])
+        subgrp13.create_dataset(str(i),data=
+                               injection_parameters['injection_snr'][i])
    
     print('Done!')
     

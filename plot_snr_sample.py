@@ -105,11 +105,6 @@ if __name__ == '__main__':
         raise KeyError('Given sample_id is too big! Maximum value = {}'.
                        format(len(np.array(data['h1_snr'])) - 1))
 
-    # Create a grid on which the sample can be plotted so that the
-    # event_time is at position 0
-#    grid = np.linspace(0 - seconds_before_event, 0 + seconds_after_event,
-#                       int(target_sampling_rate * sample_length))
-
     # Create subplots for H1, L1 and V1
     fig, axes1 = plt.subplots(nrows=3)
 
