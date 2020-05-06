@@ -107,9 +107,9 @@ if __name__ == '__main__':
     filter_injection_samples=bool(arguments['injection_samples'])
     
     if apx not in td_approximants():
-    print('Invalid waveform approximant. Please input'
-        'a valid PyCBC time-series approximant.')
-    quit()
+        print("Invalid waveform approximant. Please input"
+              "a valid PyCBC time-series approximant.")
+        quit()
     
     # -------------------------------------------------------------------------
     # Read in the sample file

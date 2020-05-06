@@ -76,7 +76,7 @@ def snr_gen(queue,data,n_samples,i,det_string):
 
     # Save parameters used for generating template
     for param in injection_parameters.keys():
-    injection_parameters[param][i]= param_dict['injections'][param]
+        injection_parameters[param][i]= param_dict['injections'][param]
 
     #return snr_samples, injection_parameters
     queue.put(snr_samples)

@@ -227,7 +227,7 @@ if __name__ == '__main__':
 
                     p = Process(target=snr_gen,kwargs=dict(data=df,
                         n_samples=n_samples,i=i,det_string=det_string))
-                        list_of_processes.append(p)
+                    list_of_processes.append(p)
 
                     p.start()
 
