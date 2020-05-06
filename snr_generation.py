@@ -107,9 +107,9 @@ if __name__ == '__main__':
     filter_injection_samples=bool(arguments['injection_samples'])
     
     if apx not in td_approximants():
-	print('Invalid waveform approximant. Please input'
-		'a valid PyCBC time-series approximant.')
-	quit()
+    print('Invalid waveform approximant. Please input'
+        'a valid PyCBC time-series approximant.')
+    quit()
     
     # -------------------------------------------------------------------------
     # Read in the sample file
@@ -129,23 +129,23 @@ if __name__ == '__main__':
     snr_samples = dict(injection_snr_samples=dict(h1_strain=dict(),l1_strain=dict(),v1_strain=dict()))
 
     injection_parameters = dict(mass1=dict(),mass2=dict(),spin1z=dict(),spin2z=dict(),
-				 ra=dict(),dec=dict(),coa_phase=dict(),inclination=dict(),
-				 polarization=dict(),injection_snr=dict())
+                 ra=dict(),dec=dict(),coa_phase=dict(),inclination=dict(),
+                 polarization=dict(),injection_snr=dict())
 
     # Initialise list of parameters we want to save in snr_series.hdf file
     param_list = ['mass1','mass2','spin1z','spin2z','ra','dec','coa_phase','inclination','polarization','injection_snr']
 
     # Initialise list of all parameters required for generating template waveforms
     param_dict = dict(injections=dict(mass1=[],mass2=[],spin1z=[],spin2z=[],ra=[],dec=[],coa_phase=[],
-		inclination=[],polarization=[],injection_snr=[],f_lower=f_low,
-		approximant=apx,delta_t=delta_t),
-		noise=dict(mass1=[],mass2=[],spin1z=[],spin2z=[],ra=[],dec=[],coa_phase=[],
-		inclination=[],polarization=[],injection_snr=[],f_lower=f_low,
-		approximant=apx,delta_t=delta_t))
+        inclination=[],polarization=[],injection_snr=[],f_lower=f_low,
+        approximant=apx,delta_t=delta_t),
+        noise=dict(mass1=[],mass2=[],spin1z=[],spin2z=[],ra=[],dec=[],coa_phase=[],
+        inclination=[],polarization=[],injection_snr=[],f_lower=f_low,
+        approximant=apx,delta_t=delta_t))
     
     # Save event sample time to new SNR dataset for each injection sample
     snr_samples['injection_snr_samples']['event_time']=np.array(
-						df['injection_samples']['event_time'])
+                        df['injection_samples']['event_time'])
 
     # Store number of samples, should be identical for all detectors
     n_samples = len(df['injection_samples']['h1_strain'])
@@ -208,7 +208,7 @@ if __name__ == '__main__':
                     # Update the progress bar based on the number of results
                     progressbar.update(i+1 - progressbar.n)
 
-	print('Done!')
+    print('Done!')
 
     if filter_injection_samples==False:
 
