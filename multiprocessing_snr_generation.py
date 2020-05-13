@@ -29,7 +29,7 @@ from pycbc.waveform import get_td_waveform, td_approximants
 # Generate SNR function
 # -----------------------------------------------------------------------------
 
-#LOGGER = multiprocessing.get_logger()
+LOGGER = multiprocessing.get_logger()
 
 def running_consumers(consumers):
     count = 0
@@ -41,12 +41,11 @@ def running_consumers(consumers):
 
 class ConsumerGenerate(multiprocessing.Process):
     def __init__(
-            self, task_queue, result_queue, strain_sample
+            self, task_queue, result_queue
     ):
         multiprocessing.Process.__init__(self)
         self._task_queue = task_queue
         self._result_queue = result_queue
-        self._strain_sample = strain_sample
 
     def run(self):
 
@@ -57,7 +56,7 @@ class ConsumerGenerate(multiprocessing.Process):
             next_task=self._task_queue.get()
             if next_task is None:
                 # This poison pil means shutdown
-                #LOGGER.info("{}: Exiting".format(proc_name))
+                LOGGER.info("{}: Exiting".format(proc_name))
                 break
 
             results=list()
@@ -77,6 +76,7 @@ class ConsumerGenerate(multiprocessing.Process):
             delta_t=next_task["delta_t"]
             index=next_task["index"]
             det_string=next_task["det_string"]
+            strain_sample = next_task["strain_sample"]
 
             # Convert sample to PyCBC time series
             strain_time_series=TimeSeries(strain_sample,
@@ -140,18 +140,14 @@ class ConsumerGenerate(multiprocessing.Process):
 
 class BuildFiles(object):
     def __init__(
-            self, output_file_path, det_string, strain_sample, param_dict, index
+            self, output_file_path, param_dict, df
     ):
         self._output_file_path = output_file_path
-        self._det_string = det_string
-        self._strain_sample = strain_sample
         self._param_dict = param_dict
-        self._index = index
+        self._df = df
 
 
     def run(self):
-
-        #h5_file_details = list()
 
         try:
             h5_file = h5py.File(self._output_file_path, 'w')
@@ -163,13 +159,12 @@ class BuildFiles(object):
 
             tasks = multiprocessing.Queue()
             results = multiprocessing.Queue()
-            num_consumers = max(int(multiprocessing.cpu_count() * 0.6), 1)
+            num_consumers = max(int(multiprocessing.cpu_count() * 0.8), 1)
 
             consumers = [
                 ConsumerGenerate(
                     tasks,
-                    results,
-                    self._strain_sample,
+                    results
                 )
                 for _ in range(num_consumers)
             ]
@@ -177,44 +172,58 @@ class BuildFiles(object):
             for consumer in consumers:
                 consumer.start()
 
+            # Loop over all detectors
+            for i, (det_name, det_string) in enumerate([('H1', 'h1_strain'),
+                                                        ('L1', 'l1_strain'),
+                                                        ('V1', 'v1_strain')]):
 
-            #LOGGER.info("Putting injection parameters.")
-            tasks.put(
-                {
-                    "mass1": self._param_dict['injections']['mass1'],
-                    "mass2": self._param_dict['injections']['mass2'],
-                    "spin1z": self._param_dict['injections']['spin1z'],
-                    "spin2z": self._param_dict['injections']['spin2z'],
-                    "ra": self._param_dict['injections']['ra'],
-                    "dec": self._param_dict['injections']['dec'],
-                    "coa_phase": self._param_dict['injections']['coa_phase'],
-                    "inclination": self._param_dict['injections']['inclination'],
-                    "polarization": self._param_dict['injections']['polarization'],
-                    "injection_snr": self._param_dict['injections']['injection_snr'],
-                    "f_low": self._param_dict['injections']['f_lower'],
-                    "approximant": self._param_dict['injections']['approximant'],
-                    "delta_t": self._param_dict['injections']['delta_t'],
-                    "index": self._index,
-                    "det_string": self._det_string
-                }
-            )
+                # Loop over all strain samples in each detector
+                for j in range(n_samples):
+
+                    # Read in detector strain data for specific sample
+                    strain_sample=np.copy(self._df['injection_samples'][det_string][j])
+
+                    # Get injection parameters
+                    for param in param_list:
+                        param_dict['injections'][param] = self._df['injection_parameters'][param][j]
+
+                    LOGGER.info("Putting injection parameters.")
+                    tasks.put(
+                        {
+                            "mass1": param_dict['injections']['mass1'],
+                            "mass2": param_dict['injections']['mass2'],
+                            "spin1z": param_dict['injections']['spin1z'],
+                            "spin2z": param_dict['injections']['spin2z'],
+                            "ra": param_dict['injections']['ra'],
+                            "dec": param_dict['injections']['dec'],
+                            "coa_phase": param_dict['injections']['coa_phase'],
+                            "inclination": param_dict['injections']['inclination'],
+                            "polarization": param_dict['injections']['polarization'],
+                            "injection_snr": param_dict['injections']['injection_snr'],
+                            "f_low": param_dict['injections']['f_lower'],
+                            "approximant": param_dict['injections']['approximant'],
+                            "delta_t": param_dict['injections']['delta_t'],
+                            "index": j,
+                            "det_string": det_string,
+                            "strain_sample": strain_sample,
+                        }
+                    )
 
             # Poison pill for each consumer
             for _ in range(num_consumers):
-                tasks.put(None)
+                    tasks.put(None)
 
             while running_consumers(consumers) > 0:
                 try:
-                    #LOGGER.info("Getting results.")
-                    print("Getting next result")
-                    next_result = results.get(timeout=30)
+                    LOGGER.info("Getting results.")
+                    next_result = results.get(timeout=5)
                 except Empty:
-                    #LOGGER.info("Nothing in the queue.")
+                    LOGGER.info("Nothing in the queue.")
                     next_result = None
 
                 if next_result is None:
                     # Poison pill means a consumer shutdown
-                    #LOGGER.info("Next result is none. Poison pill.")
+                    LOGGER.info("Next result is none. Poison pill.")
                     pass
                 else:
                     snr_sample = next_result["snr_strain"]
@@ -237,25 +246,26 @@ class BuildFiles(object):
 
                     if injection_params["det_string"] == "h1_strain":
                         h1_data_group.create_dataset(
-                            str(injection_params["index"]),data=snr_sample
+                            str(injection_params["index"]),
+                            data=snr_sample,
                         )
                         print("Creating dataset for H1")
                     elif injection_params["det_string"] == "l1_strain":
                         l1_data_group.create_dataset(
-                            str(injection_params["index"]),data=snr_sample
+                            str(injection_params["index"]),
+                            data=snr_sample,
                         )
                         print("Creating dataset for L1")
                     elif injection_params["det_string"] == "v1_strain":
                         v1_data_group.create_dataset(
-                            str(injection_params["index"]),data=snr_sample
+                            str(injection_params["index"]),
+                            data=snr_sample,
                         )
                         print("Creating dataset for V1")
 
         finally:
-            pass
-            #for location, h5_file_detail in six.viewitems(h5_file_details):
-            #    LOGGER.info("Closing: {}".format(proc_name))
-            #    h5_file.close()
+            LOGGER.info("Closing file.")
+            h5_file.close()
 
 # -----------------------------------------------------------------------------
 # Main Code
@@ -268,14 +278,14 @@ if __name__ == '__main__':
     # -----------------------------------------------------------------------------
     
     # Disable output buffering ('flush' option is not available for Python 2)
-    sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
+    sys.stderr = os.fdopen(sys.stderr.fileno(), 'w', 0)
 
     # Start the stopwatch
     script_start = time.time()
 
     multiprocessing.log_to_stderr()
-    #logger = multiprocessing.get_logger()
-    #logger.setLevel(logging.DEBUG)
+    logger = multiprocessing.get_logger()
+    logger.setLevel(logging.DEBUG)
 
     print('')
     print('GENERATE A GW SAMPLE SNR TIME-SERIES')
@@ -387,42 +397,23 @@ if __name__ == '__main__':
         
         print('Generating SNR time-series for injection samples...', end=' ')
 
-        # Loop over all detectors
-        for i, (det_name, det_string) in enumerate([('H1', 'h1_strain'),
-                                                    ('L1', 'l1_strain'),
-                                                    ('V1', 'v1_strain')]):
-
-            list_of_processes=[]
-
-            # Use a tqdm context manager for the progress bar
-            tqdm_args = dict(total=n_samples, ncols=80, unit='sample', desc=det_name)
-            with tqdm(**tqdm_args) as progressbar:
-
-                # Loop over all strain samples in each detector
-                for j in range(n_samples):
-
-                    # Read in detector strain data for specific sample
-                    strain_sample=np.array(df['injection_samples'][det_string][j])
-
-                    # Get injection parameters
-                    for param in param_list:
-                        param_dict['injections'][param] = df['injection_parameters'][param][j]
 
 
 
-                    # Do multiprocessing
 
-                    build_files = BuildFiles(
-                        output_file_path=output_file_path,
-                        det_string=det_string,
-                        strain_sample=strain_sample,
-                        param_dict=param_dict,
-                        index = j,
-                    )
-                    build_files.run()
 
-                    # Update the progress bar based on the number of results
-                    progressbar.update(i+1 - progressbar.n)
+        build_files = BuildFiles(
+            output_file_path=output_file_path,
+            param_dict=param_dict,
+            df = df
+        )
+        build_files.run()
+
+
+
+
+
+
 
         print('Done!')
 
@@ -443,4 +434,5 @@ if __name__ == '__main__':
     # Print the total run time
     print('Total runtime: {:.1f} seconds!'.format(time.time() - script_start))
     print('')
+    exit()
 
