@@ -274,7 +274,7 @@ if __name__ == '__main__':
     
     # Get file size in MB and print the result
     sample_file_size = os.path.getsize(output_file_path) / 1024**2
-    print('Size of resulting HDF file: {:.2f}MB'.format(sample_file_size))
+    print('Size of resulting HDF file: {:.2f}KB'.format(sample_file_size))
     print('')
     
     # -------------------------------------------------------------------------
