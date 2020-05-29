@@ -1,4 +1,5 @@
 # Sample Generation
+
 This repository provides an additional features to the repository by Timothy Gebhard for [generating realistic synthetic gravitational-wave data](https://www.github.com/timothygebhard/ggwd/). When generating large data sets of gravitational-wave samples, an alternative script for saving data in "chunks" during the sample generation process is included. An SNR series generation process has been included to produce SNR series of both injection and pure noise samples using optimal matched filters and a template bank of filters. Additionally, the original codebase has been upgraded to work for 3 detector systems, including H1, L1 and V1, with all of the detector responses and delays built in.
 
 The scripts in this repository are built on the basis of the [PyCBC software package](https://www.pycbc.org/), with the intention of providing an easy to use method for generating synthetic gravitational-wave samples in real and synthetic gaussian detector noise, and for generating SNR series for these samples using optimal filters and/or a bank of templates.
@@ -8,9 +9,11 @@ The scripts in this repository are built on the basis of the [PyCBC software pac
 This project is not a package for Python, it is simply a collection of scripts that can be run from the command line. Ensure that your Python environment satisfies all the package requirements listed in `requirements.txt`.
 
 ## Generating Gravitational-Wave Samples
+
 This is only a quickstart guide, for a more detailed walkthrough and full documentation (except chunked and SNR generation), go to the [original sample generation repository by Timothy Gebhard](https://www.github.com/timothygebhard/ggwd/).
 
 In order to generate gravitational-wave samples you can just run either the following:
+
 ```python generate_sample.py```
 ```python chunked_generate.py```
 
@@ -20,6 +23,20 @@ Customising the sample generation process in terms of the number of injection or
 
 ## Generating SNR Time-Series Samples
 
+The first steps in the process of generating SNR series data is to generate the samples (above) and filter templates that are going to be used.
 
 ### Generating Filter Banks
-The script 'snr_generation.py' reads in the output .hdf file from the above sample generation process (currently only working for samples containing injections and using the optimal matched filter). It outputs a second hdf file containing the injected signal parameters and the SNR time-series data for each detector.
+
+The filter bank generation file, `generate_filter_templates.py`, works much the same as the `generate_sample.py` script. In order to generate the filter bank `.hdf` file, run the following:
+
+```python generate_filter_tempaltes.py```
+
+This script performs the same function as the script that generates the injection signals for the general sample generation process. This means that the two config files mentioned above will also be used in the same manner for generating the filter banks.
+
+In the `default.json` config file, the random seed for generating waveform parameters is given its entry. This is done so that the filters in the filter bank are expected not to match the exact parameters of the injections in the generated strain samples. We do this because in the SNR series process, we generate the optimal matched filter SNR output separately to the filter bank SNR outputs such that they can be operated independently.
+
+### Computing SNR Series
+
+...
+
+Since the multiprocessing method was created with large datasets in mind, it prints out multiple status updates for each process to the command line such that the individual running the program can ensure that it is still processing. Note that at the end of the task queue, there is a pause for up to 15 seconds where it is waiting in case there are more tasks to complete.
