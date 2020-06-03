@@ -43,9 +43,11 @@ Since the multiprocessing method was created with large datasets in mind, it pri
 
 ## Generated Data Structures
 
-![alt text](https://github.com/damonbeveridge/samplegen/blob/master/data_structures/generate_sample.JPG "Logo Title Text 1")
 <details>
 <summary>Injection and Noise Gravitational Wave Samples</summary>
 <br>
-This is how you dropdown.
+![alt text](https://github.com/damonbeveridge/samplegen/blob/master/data_structures/generate_sample.JPG "Logo Title Text 1")
+![alt text](https://github.com/damonbeveridge/samplegen/blob/master/data_structures/default%20-%20injection_parameters.JPG "Logo Title Text 1")
+![alt text](https://github.com/damonbeveridge/samplegen/blob/master/data_structures/default%20-%20injection_samples.JPG "Logo Title Text 1")
+![alt text](https://github.com/damonbeveridge/samplegen/blob/master/data_structures/default%20-%20noise_samples.JPG "Logo Title Text 1")
 </details>
