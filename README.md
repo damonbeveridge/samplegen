@@ -46,6 +46,7 @@ Since the multiprocessing method was created with large datasets in mind, it pri
 <details>
 <summary>Injection and Noise Gravitational Wave Samples</summary>
 <br>
+  
 ![alt text](https://github.com/damonbeveridge/samplegen/blob/master/data_structures/generate_sample.JPG "Logo Title Text 1")
 ![alt text](https://github.com/damonbeveridge/samplegen/blob/master/data_structures/default%20-%20injection_parameters.JPG "Logo Title Text 1")
 ![alt text](https://github.com/damonbeveridge/samplegen/blob/master/data_structures/default%20-%20injection_samples.JPG "Logo Title Text 1")
