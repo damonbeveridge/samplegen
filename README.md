@@ -40,3 +40,7 @@ In the `default.json` config file, the random seed for generating waveform param
 ...
 
 Since the multiprocessing method was created with large datasets in mind, it prints out multiple status updates for each process to the command line such that the individual running the program can ensure that it is still processing. Note that at the end of the task queue, there is a pause for up to 15 seconds where it is waiting in case there are more tasks to complete.
+
+## Generated Data Structures
+
+![alt text](https://github.com/damonbeveridge/samplegen/blob/master/data_structures/generate_sample.JPG "Logo Title Text 1")
