@@ -29,7 +29,7 @@ The first steps in the process of generating SNR series data is to generate the 
 
 The filter bank generation file, `generate_filter_templates.py`, works much the same as the `generate_sample.py` script. In order to generate the filter bank `.hdf` file, run the following:
 
-```python generate_filter_tempaltes.py```
+```python generate_filter_templates.py```
 
 This script performs the same function as the script that generates the injection signals for the general sample generation process. This means that the two config files mentioned above will also be used in the same manner for generating the filter banks.
 
@@ -37,9 +37,11 @@ In the `default.json` config file, the random seed for generating waveform param
 
 ### Computing SNR Series
 
-...
+In order to compute the SNR time series for injection samples and/or pure noise samples, they must be previously generated with `generate_sample.py` or `chunked_generate.py`. If you want more than just the optimal matched filtering SNR for injection signals, you need to have generated a bank of templates using `generate_filter_templates.py`. Once these are done, you can generate the SNR time series for the samples and templates produced in the files generated with the previously mentioned processes by running the following:
 
-Since the multiprocessing method was created with large datasets in mind, it prints out multiple status updates for each process to the command line such that the individual running the program can ensure that it is still processing. Note that at the end of the task queue, there is a pause for up to 15 seconds where it is waiting in case there are more tasks to complete.
+```python generate_snr_series.py```
+
+Since the multiprocessing method was created with large datasets in mind, it prints out multiple status updates for each process to the command line such that the person running the program can ensure that it is still processing. Note that at the end of the task queue, there is a pause for up to 15 seconds where it is waiting in case there are more tasks to complete.
 
 ## Generated Data Structures
 
