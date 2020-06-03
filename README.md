@@ -48,7 +48,28 @@ Since the multiprocessing method was created with large datasets in mind, it pri
 <br>
   
 ![alt text](https://github.com/damonbeveridge/samplegen/blob/master/data_structures/generate_sample.JPG "Logo Title Text 1")
-![alt text](https://github.com/damonbeveridge/samplegen/blob/master/data_structures/default%20-%20injection_parameters.JPG "Logo Title Text 1")
-![alt text](https://github.com/damonbeveridge/samplegen/blob/master/data_structures/default%20-%20injection_samples.JPG "Logo Title Text 1")
-![alt text](https://github.com/damonbeveridge/samplegen/blob/master/data_structures/default%20-%20noise_samples.JPG "Logo Title Text 1")
+![alt text](https://github.com/damonbeveridge/samplegen/blob/master/data_structures/default%20-%20injection_parameters.JPG "Injection Parameters")
+![alt text](https://github.com/damonbeveridge/samplegen/blob/master/data_structures/default%20-%20injection_samples.JPG "Injection Samples")
+![alt text](https://github.com/damonbeveridge/samplegen/blob/master/data_structures/default%20-%20noise_samples.JPG "Pure Noise Samples")
+</details>
+
+
+<details>
+<summary>Matched Filtering Templates</summary>
+<br>
+  
+![alt text](https://github.com/damonbeveridge/samplegen/blob/master/data_structures/generate_filter_templates.JPG "generate_filter_templates.py")
+![alt text](https://github.com/damonbeveridge/samplegen/blob/master/data_structures/default_templates%20-%20template_samples.JPG "Template Samples")
+![alt text](https://github.com/damonbeveridge/samplegen/blob/master/data_structures/default_templates%20-%20template_parameters.JPG "Template Parameters")
+![alt text](https://github.com/damonbeveridge/samplegen/blob/master/data_structures/default_templates%20-%20sample_times.JPG "Template Sample Times")
+</details>
+
+
+<details>
+<summary>SNR Time Series Samples</summary>
+<br>
+  
+![alt text](https://github.com/damonbeveridge/samplegen/blob/master/data_structures/generate_snr_series.JPG "generate_snr_series.py")
+![alt text](https://github.com/damonbeveridge/samplegen/blob/master/data_structures/default_snrs%20-%20omf_injection_snr_samples.JPG "Injection Sample Optimal SNR Series")
+![alt text](https://github.com/damonbeveridge/samplegen/blob/master/data_structures/default_snrs%20-%20template_snr_samples.JPG "Noise and Injection Template SNR Series")
 </details>
