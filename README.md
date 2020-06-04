@@ -21,6 +21,17 @@ The first Python script is the original script from the [ggwd repository](https:
 
 Customising the sample generation process in terms of the number of injection or pure noise samples and more can be done by editing the `./config_files/default.json` file. Adjustments to the waveform/sample parameters such as sampling rate, sample length and merger parameter ranges can be made in the `./config_files/waveform_params.ini` file.
 
+### Generating Sample Plots
+
+You can use the `plot_sample.py` script to plot a specific result from the generated dataset. The index and sample type can be controlled by using the `--sample-id` command line argument, and the time range around the event time can be controlled with the `--seconds-before` and `--seconds-after` command line arguments.
+
+<details>
+<summary>Sample Plot</summary>
+<br>
+  
+![alt text](https://github.com/damonbeveridge/samplegen/blob/master/data_structures/sample.png "plot_sample.py")
+</details>
+
 ## Generating SNR Time-Series Samples
 
 The first steps in the process of generating SNR series data is to generate the samples (above) and filter templates that are going to be used.
@@ -45,13 +56,33 @@ When running the `generate_snr_series.py`, there are two boolean arguments (`--f
 
 Since the multiprocessing method for the SNR series generation was created with large datasets in mind, it prints out multiple status updates for each process to the command line such that the person running the program can ensure that it is still processing. Note that at the end of the task queue, there is a pause for up to 15 seconds where it is waiting in case there are more tasks to complete.
 
+### Generating SNR Series Plots
+
+Plots can be generated for both optimal and template based SNR series. The injection sample ID is controlled using `--sample-id`, as with plotting GW samples, and the noise sample ID and template ID are controlled with the `--noise-id` and `--template-id` command line arguments respectively.
+
+By default, the script is set to plot the optimal SNR series for injection samples, but this can be adjusted by setting `--plot-template-sample` to false. From here you can control whether to plot injection or noise samples with `--plot-injection-sample` (default is True).
+
+<details>
+<summary>Sample Plot</summary>
+<br>
+  
+![alt text](https://github.com/damonbeveridge/samplegen/blob/master/data_structures/snr_sample0.png "Optimal Injection SNR Plot")
+</details>
+
+<details>
+<summary>Sample Plot</summary>
+<br>
+  
+![alt text](https://github.com/damonbeveridge/samplegen/blob/master/data_structures/snr_injection4_template0.png "Template SNR Plot")
+</details>
+
 ## Generated Data Structures
 
 <details>
 <summary>Injection and Noise Gravitational Wave Samples</summary>
 <br>
   
-![alt text](https://github.com/damonbeveridge/samplegen/blob/master/data_structures/generate_sample.JPG "Logo Title Text 1")
+![alt text](https://github.com/damonbeveridge/samplegen/blob/master/data_structures/generate_sample.JPG "generate_sample.py")
 ![alt text](https://github.com/damonbeveridge/samplegen/blob/master/data_structures/default%20-%20injection_parameters.JPG "Injection Parameters")
 ![alt text](https://github.com/damonbeveridge/samplegen/blob/master/data_structures/default%20-%20injection_samples.JPG "Injection Samples")
 ![alt text](https://github.com/damonbeveridge/samplegen/blob/master/data_structures/default%20-%20noise_samples.JPG "Pure Noise Samples")
