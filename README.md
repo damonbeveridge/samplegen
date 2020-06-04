@@ -63,14 +63,14 @@ Plots can be generated for both optimal and template based SNR series. The injec
 By default, the script is set to plot the optimal SNR series for injection samples, but this can be adjusted by setting `--plot-template-sample` to false. From here you can control whether to plot injection or noise samples with `--plot-injection-sample` (default is True).
 
 <details>
-<summary>Sample Plot</summary>
+<summary>Optimal SNR Plot</summary>
 <br>
   
 ![alt text](https://github.com/damonbeveridge/samplegen/blob/master/data_structures/snr_sample0.png "Optimal Injection SNR Plot")
 </details>
 
 <details>
-<summary>Sample Plot</summary>
+<summary>Template SNR Plot</summary>
 <br>
   
 ![alt text](https://github.com/damonbeveridge/samplegen/blob/master/data_structures/snr_injection4_template0.png "Template SNR Plot")
