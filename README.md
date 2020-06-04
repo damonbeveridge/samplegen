@@ -37,11 +37,13 @@ In the `default.json` config file, the random seed for generating waveform param
 
 ### Computing SNR Series
 
-In order to compute the SNR time series for injection samples and/or pure noise samples, they must be previously generated with `generate_sample.py` or `chunked_generate.py`. If you want more than just the optimal matched filtering SNR for injection signals, you need to have generated a bank of templates using `generate_filter_templates.py`. Once these are done, you can generate the SNR time series for the samples and templates produced in the files generated with the previously mentioned processes by running the following:
+In order to compute the SNR time series for injection samples and/or pure noise samples, they must be previously generated with `generate_sample.py` or `chunked_generate.py`. If you want more than just the optimal matched filtering SNR for injection signals, you need to have generated a bank of templates using `generate_filter_templates.py`. From this, you can generate the SNR time series for the samples and templates produced in the files generated with the previously mentioned processes by running the following:
 
 ```python generate_snr_series.py```
 
-Since the multiprocessing method was created with large datasets in mind, it prints out multiple status updates for each process to the command line such that the person running the program can ensure that it is still processing. Note that at the end of the task queue, there is a pause for up to 15 seconds where it is waiting in case there are more tasks to complete.
+When running the `generate_snr_series.py`, there are two boolean arguments (`--filter-injection-samples` and `--filter-templates`) that control whether or not to generate the optimal SNR series for injection samples and whether or not to generate SNR series using a template bank respectively. Both arguments are by default set to `True`.
+
+Since the multiprocessing method for the SNR series generation was created with large datasets in mind, it prints out multiple status updates for each process to the command line such that the person running the program can ensure that it is still processing. Note that at the end of the task queue, there is a pause for up to 15 seconds where it is waiting in case there are more tasks to complete.
 
 ## Generated Data Structures
 
