@@ -153,10 +153,10 @@ if __name__ == '__main__':
     # -------------------------------------------------------------------------
 
     # Set the random seed for this script
-    np.random.seed(config['random_seed'])
+    np.random.seed(config['template_random_seed'])
 
     # Define some useful shortcuts
-    random_seed = config['random_seed']
+    random_seed = config['template_random_seed']
     max_runtime = config['max_runtime']
     bkg_data_dir = config['background_data_directory']
 

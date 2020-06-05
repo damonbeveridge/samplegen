@@ -51,7 +51,7 @@ if __name__ == '__main__':
                         help='Boolean value determining whether to plot '
                              'template or optimal matched filtering SNR.'
                              'Default: False.',
-                        default=False)
+                        default=True)
     parser.add_argument('--plot-injection-sample',
                         help='Boolean value determining whether to plot '
                              'injection sample or noise sample SNR.'
@@ -275,7 +275,7 @@ if __name__ == '__main__':
                                                         ('V1', 'v1_snr')]):
 
                 # axes1[i].plot(grid, sample[det_string], color='C0')
-                axes1[i].plot(injections['template_snr_samples']['noise'][det_name][label], color='C0')
+                axes1[i].plot(df['template_snr_samples']['noise'][det_name][label], color='C0')
                 # axes1[i].set_xlim(-seconds_before, seconds_after)
                 # axes1[i].set_ylim(-150, 150)
                 axes1[i].tick_params('y', colors='C0', labelsize=8)

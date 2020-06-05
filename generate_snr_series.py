@@ -143,6 +143,9 @@ if __name__ == '__main__':
         quit()
     apx = static_arguments["approximant"]
 
+    sample_length = static_arguments["seconds_before_event"] + static_arguments["seconds_after_event"]
+    delta_f = 1.0 / sample_length
+
     # Get f-lower and delta-t from config files
     f_low = static_arguments["f_lower"]
     delta_t = 1.0 / static_arguments["target_sampling_rate"]
@@ -199,7 +202,7 @@ if __name__ == '__main__':
         if n_templates == 0:
             print('Done! (n-templates = 0)'
                   'Please generate templates before running.\n')
-        elif n_noise_samples > 0:
+        elif (n_noise_samples > 0) or (n_injection_samples > 0):
             filters_build_files = FiltersBuildFiles(
                 output_file_path=output_file_path,
                 df = df,
@@ -209,7 +212,8 @@ if __name__ == '__main__':
                 n_templates = n_templates,
                 f_low = f_low,
                 delta_t = delta_t,
-                filter_injection_samples = filter_injection_samples
+                filter_injection_samples = filter_injection_samples,
+                delta_f = delta_f
             )
             filters_build_files.run()
 
