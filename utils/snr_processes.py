@@ -74,6 +74,8 @@ class InjectionsConsumerGenerate(multiprocessing.Process):
             det_string=next_task["det_string"]
             strain_sample = next_task["strain_sample"]
 
+            print("Generating optimal SNR time series: " + det_string + " - sample" + str(index))
+
             # Convert sample to PyCBC time series
             strain_time_series=TimeSeries(strain_sample,
                                           delta_t=delta_t, epoch=0,
@@ -193,7 +195,8 @@ class InjectionsBuildFiles(object):
                     for param in param_list:
                         self._param_dict['injections'][param] = self._df['injection_parameters'][param][j]
 
-                    LOGGER.info("Putting injection parameters: " + det_name + "-" + str(j) + ".")
+                    #LOGGER.info("Putting injection parameters: " + det_name + "-" + str(j) + ".")
+                    print("Putting injection parameters: " + det_name + " - sample" + str(j) + ".")
                     tasks.put(
                         {
                             "mass1": self._param_dict['injections']['mass1'],
@@ -222,7 +225,7 @@ class InjectionsBuildFiles(object):
             while running_consumers(consumers) > 0:
                 try:
                     LOGGER.info("Getting results.")
-                    next_result = results.get(timeout=10)
+                    next_result = results.get(timeout=15)
                 except Empty:
                     LOGGER.info("Nothing in the queue.")
                     next_result = None
@@ -315,16 +318,19 @@ class FiltersConsumerGenerate(multiprocessing.Process):
             det_string=next_task["det_string"]
             strain_sample=next_task["strain_sample"]
             sample_type=next_task["sample_type"]
+            delta_f=next_task["delta_f"]
+
+            print("Generating SNR time series: " + det_string + " - sample" + str(sample_index) + ", template" + str(template_index))
 
             template_time_series = TimeSeries(template,
                                               delta_t=delta_t, epoch=0,
                                               dtype=None, copy=True)
-            template_freq_series = template_time_series.to_frequencyseries()
+            template_freq_series = template_time_series.to_frequencyseries(delta_f=delta_f)
 
             strain_sample_time_series = TimeSeries(strain_sample,
                                                    delta_t=delta_t, epoch=0,
                                                    dtype=None, copy=True)
-            strain_freq_series = strain_sample_time_series.to_frequencyseries()
+            strain_freq_series = strain_sample_time_series.to_frequencyseries(delta_f=delta_f)
 
             template_freq_series.resize(len(strain_freq_series))
 
@@ -353,7 +359,7 @@ class FiltersConsumerGenerate(multiprocessing.Process):
 class FiltersBuildFiles(object):
     def __init__(
             self, output_file_path, df, templates_df, n_injection_samples, n_noise_samples,
-            n_templates, f_low, delta_t, filter_injection_samples
+            n_templates, f_low, delta_t, filter_injection_samples, delta_f
     ):
         self._output_file_path = output_file_path
         self._df = df
@@ -364,6 +370,7 @@ class FiltersBuildFiles(object):
         self._f_low = f_low
         self._delta_t = delta_t
         self._filter_injection_samples = filter_injection_samples
+        self._delta_f = delta_f
 
     def run(self):
 
@@ -413,7 +420,8 @@ class FiltersBuildFiles(object):
                     # Loop over all templates
                     for k in range(self._n_templates):
 
-                        LOGGER.info("Putting injection sample and template parameters: " + det_name + "-" + str(j) + ", Template-" + str(k) + ".")
+                        #LOGGER.info("Putting injection sample and template parameters: " + det_name + "-" + str(j) + ", Template-" + str(k) + ".")
+                        print("Putting injection sample and template parameters: " + det_name + " - sample" + str(j) + ", Template-" + str(k) + ".")
                         template_tasks.put(
                             {
                                 "f_low": self._f_low,
@@ -424,6 +432,7 @@ class FiltersBuildFiles(object):
                                 "det_string": det_string,
                                 "strain_sample": np.copy(self._df["injection_samples"][det_string][j]),
                                 "sample_type": "injection_samples",
+                                "delta_f": self._delta_f,
                             }
                         )
 
@@ -433,7 +442,8 @@ class FiltersBuildFiles(object):
                     # Loop over all templates
                     for k in range(self._n_templates):
 
-                        LOGGER.info("Putting noise sample and template parameters: " + det_name + "-" + str(j) + ", Template-" + str(k) + ".")
+                        #LOGGER.info("Putting noise sample and template parameters: " + det_name + "-" + str(j) + ", Template-" + str(k) + ".")
+                        print("Putting noise sample and template parameters: " + det_name + " - sample" + str(j) + ", Template-" + str(k) + ".")
                         template_tasks.put(
                             {
                                 "f_low": self._f_low,
@@ -444,6 +454,7 @@ class FiltersBuildFiles(object):
                                 "det_string": det_string,
                                 "strain_sample": np.copy(self._df["noise_samples"][det_string][j]),
                                 "sample_type": "noise_samples",
+                                "delta_f": self._delta_f,
                             }
                         )
 
@@ -454,7 +465,7 @@ class FiltersBuildFiles(object):
             while running_consumers(consumers) > 0:
                 try:
                     LOGGER.info("Getting results.")
-                    next_result = template_results.get(timeout=10)
+                    next_result = template_results.get(timeout=15)
                 except Empty:
                     LOGGER.info("Nothing in the queue.")
                     next_result = None
