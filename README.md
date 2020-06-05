@@ -15,6 +15,7 @@ This is only a quickstart guide, for a more detailed walkthrough and full docume
 In order to generate gravitational-wave samples you can just run either the following:
 
 ```python generate_sample.py```
+
 ```python chunked_generate.py```
 
 The first Python script is the original script from the [ggwd repository](https://www.github.com/timothygebhard/ggwd/) and the second was created to allow for the generation of very large datafiles that would crash if using the previous file (it does this by saving to the file every 50,000 samples).
