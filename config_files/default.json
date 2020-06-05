@@ -1,14 +1,15 @@
 {
   "random_seed": 42,
+  "template_random_seed": 10,
   "background_data_directory": null,
   "dq_bits": [0, 1, 2, 3],
   "inj_bits": [0, 1, 2, 4],
   "waveform_params_file_name": "waveform_params.ini",
   "max_runtime": 60,
-  "n_injection_samples": 10,
-  "n_noise_samples": 10,
+  "n_injection_samples": 1,
+  "n_noise_samples": 0,
   "n_processes": 16,
-  "n_template_samples": 5,
+  "n_template_samples": 20,
   "output_file_name": "default.hdf",
   "snr_output_file_name": "default_snrs.hdf",
   "template_output_file_name": "default_templates.hdf"
