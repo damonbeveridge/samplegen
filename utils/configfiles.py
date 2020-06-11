@@ -87,7 +87,7 @@ def read_json_config(file_path):
     required_keys = {'background_data_directory', 'dq_bits', 'inj_bits',
                      'waveform_params_file_name', 'max_runtime',
                      'n_injection_samples', 'n_noise_samples', 'n_processes',
-                     'random_seed', 'output_file_name'}
+                     'random_seed', 'output_file_name', 'n_template_samples'}
     
     # Make sure no required keys are missing
     missing_keys = required_keys.difference(set(config.keys()))
