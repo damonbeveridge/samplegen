@@ -325,7 +325,7 @@ if __name__ == '__main__':
 
             # Select the sample (i.e., the row from the data frame of samples)
             try:
-                sample = df['omf_injection_snr_samples']['h1_snr']['0']
+                sample = df['omf_injection_snr_samples']['h1_snr'][str(sample_id)]
             except KeyError:
                 raise KeyError('Given noise_id or template_id is too big!'
                                'Maximum template_id value = {t}. Maximum sample_id value = {s}'.
