@@ -9,6 +9,10 @@ optimal matched filtering SNR time-series.
 
 from __future__ import print_function
 
+from functools import wraps
+from sys import exit, stderr, stdout
+from traceback import print_exc
+
 import argparse
 import os
 import sys
@@ -24,10 +28,39 @@ from utils.snr_processes import InjectionsBuildFiles, FiltersBuildFiles
 from pycbc.waveform import td_approximants
 
 # -----------------------------------------------------------------------------
+# Suppress Broken Pipe
+# -----------------------------------------------------------------------------
+
+def suppress_broken_pipe_msg(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        try:
+            return f(*args, **kwargs)
+        except SystemExit:
+            raise
+        except:
+            print_exc()
+            exit(1)
+        finally:
+            try:
+                stdout.flush()
+            finally:
+                try:
+                    stdout.close()
+                finally:
+                    try:
+                        stderr.flush()
+                    finally:
+                        stderr.close()
+    return wrapper
+
+# -----------------------------------------------------------------------------
 # Main Code
 # -----------------------------------------------------------------------------
 
-if __name__ == '__main__':
+@suppress_broken_pipe_msg
+def main():
+# if __name__ == '__main__':
     
     # -----------------------------------------------------------------------------
     # Preliminaries
@@ -69,6 +102,11 @@ if __name__ == '__main__':
                              'SNRs of all signals using a set of templates.'
                              'Default: True',
                         default=True)
+    parser.add_argument('--trim-output',
+                        help='Boolean expression for whether to trim the'
+                             'SNR output of all signals using the cutoff values.'
+                             'Default: True',
+                        default=True)
 
     # Parse the arguments that were passed when calling this script
     print('Parsing command line arguments...', end=' ')
@@ -78,6 +116,7 @@ if __name__ == '__main__':
     # Set up shortcut for the command line arguments
     filter_injection_samples=bool(arguments['filter_injection_samples'])
     filter_templates=bool(arguments['filter_templates'])
+    trim_output=bool(arguments['trim_output'])
 
     # -------------------------------------------------------------------------
     # Read in JSON config file specifying the sample generation process
@@ -125,6 +164,12 @@ if __name__ == '__main__':
     df = h5py.File(input_file_path, 'r')
 
     print('Done!')
+
+    print('Reading in the templates HDF file...', end=' ')
+
+    templates_df = h5py.File(templates_file_path, 'r')
+
+    print('Done!')
     
     # -------------------------------------------------------------------------
     # Create dataframe column to store SNR time-series
@@ -142,7 +187,8 @@ if __name__ == '__main__':
 
     # Get f-lower and delta-t from config files
     f_low = static_arguments["f_lower"]
-    delta_t = 1.0 / static_arguments["target_sampling_rate"]
+    sample_rate = static_arguments["target_sampling_rate"]
+    delta_t = 1.0 / sample_rate
 
     # Keep track of all the SNRs (and parameters) we have generated
     injection_parameters = dict(mass1=dict(),mass2=dict(),spin1z=dict(),spin2z=dict(),
@@ -163,6 +209,10 @@ if __name__ == '__main__':
     # Store number of templates
     n_templates = config['n_template_samples']
 
+    # Get relevant output cutoff values
+    output_cutoff_low = int(config['output_cutoff_low'] * sample_rate)
+    output_cutoff_high = int(config['output_cutoff_high'] * sample_rate)
+
     # -------------------------------------------------------------------------
     # Compute SNR time-series
     # -------------------------------------------------------------------------
@@ -176,7 +226,10 @@ if __name__ == '__main__':
                 output_file_path=output_file_path,
                 param_dict = param_dict,
                 df = df,
-                n_samples = n_injection_samples
+                n_samples = n_injection_samples,
+                trim_output = trim_output,
+                output_cutoff_low = output_cutoff_low,
+                output_cutoff_high = output_cutoff_high,
             )
             injections_build_files.run()
 
@@ -190,12 +243,6 @@ if __name__ == '__main__':
 
 
     if filter_templates:
-        
-        print('Reading in the templates HDF file...', end=' ')
-
-        templates_df = h5py.File(templates_file_path, 'r')
-
-        print('Done!')
 
         print("Generating SNR time-series for injection and noise samples using a template set...")
 
@@ -213,7 +260,10 @@ if __name__ == '__main__':
                 f_low = f_low,
                 delta_t = delta_t,
                 filter_injection_samples = filter_injection_samples,
-                delta_f = delta_f
+                delta_f = delta_f,
+                trim_output = trim_output,
+                output_cutoff_low = output_cutoff_low,
+                output_cutoff_high = output_cutoff_high
             )
             filters_build_files.run()
 
@@ -237,3 +287,8 @@ if __name__ == '__main__':
     print('Total runtime: {:.1f} seconds!'.format(time.time() - script_start))
     print('')
     exit()
+
+
+
+if __name__ == '__main__':
+    main()
