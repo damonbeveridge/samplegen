@@ -7,9 +7,11 @@
   "waveform_params_file_name": "waveform_params.ini",
   "max_runtime": 60,
   "n_injection_samples": 1,
-  "n_noise_samples": 0,
+  "n_noise_samples": 1,
   "n_processes": 16,
-  "n_template_samples": 20,
+  "n_template_samples": 5,
+  "output_cutoff_low": 4.5,
+  "output_cutoff_high": 6.5,
   "output_file_name": "default.hdf",
   "snr_output_file_name": "default_snrs.hdf",
   "template_output_file_name": "default_templates.hdf"
