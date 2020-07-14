@@ -139,12 +139,16 @@ class InjectionsConsumerGenerate(multiprocessing.Process):
 
 class InjectionsBuildFiles(object):
     def __init__(
-            self, output_file_path, param_dict, df, n_samples
+            self, output_file_path, param_dict, df, n_samples,
+            trim_output, output_cutoff_low, output_cutoff_high
     ):
         self._output_file_path = output_file_path
         self._param_dict = param_dict
         self._df = df
         self._n_samples = n_samples
+        self._trim_output = trim_output
+        self._output_cutoff_low = output_cutoff_low
+        self._output_cutoff_high = output_cutoff_high
 
 
     def run(self):
@@ -253,24 +257,44 @@ class InjectionsBuildFiles(object):
                     )
 
                     # Write result SNR data to HDF file in correct groups
-                    if injection_params["det_string"] == "h1_strain":
-                        print("Creating dataset for H1 - sample" + str(injection_params["index"]))
-                        omf_h1_data_group.create_dataset(
-                            str(injection_params["index"]),
-                            data=snr_sample,
-                        )
-                    elif injection_params["det_string"] == "l1_strain":
-                        print("Creating dataset for L1 - sample" + str(injection_params["index"]))
-                        omf_l1_data_group.create_dataset(
-                            str(injection_params["index"]),
-                            data=snr_sample,
-                        )
+                    if self._trim_output:
+                        if injection_params["det_string"] == "h1_strain":
+                            print("Creating dataset for H1 - sample" + str(injection_params["index"]))
+                            omf_h1_data_group.create_dataset(
+                                str(injection_params["index"]),
+                                data=snr_sample[self._output_cutoff_low:self._output_cutoff_high],
+                            )
+                        elif injection_params["det_string"] == "l1_strain":
+                            print("Creating dataset for L1 - sample" + str(injection_params["index"]))
+                            omf_l1_data_group.create_dataset(
+                                str(injection_params["index"]),
+                                data=snr_sample[self._output_cutoff_low:self._output_cutoff_high],
+                            )
+                        else:
+                            print("Creating dataset for V1 - sample" + str(injection_params["index"]))
+                            omf_v1_data_group.create_dataset(
+                                str(injection_params["index"]),
+                                data=snr_sample[self._output_cutoff_low:self._output_cutoff_high],
+                            )
                     else:
-                        print("Creating dataset for V1 - sample" + str(injection_params["index"]))
-                        omf_v1_data_group.create_dataset(
-                            str(injection_params["index"]),
-                            data=snr_sample,
-                        )
+                        if injection_params["det_string"] == "h1_strain":
+                            print("Creating dataset for H1 - sample" + str(injection_params["index"]))
+                            omf_h1_data_group.create_dataset(
+                                str(injection_params["index"]),
+                                data=snr_sample,
+                            )
+                        elif injection_params["det_string"] == "l1_strain":
+                            print("Creating dataset for L1 - sample" + str(injection_params["index"]))
+                            omf_l1_data_group.create_dataset(
+                                str(injection_params["index"]),
+                                data=snr_sample,
+                            )
+                        else:
+                            print("Creating dataset for V1 - sample" + str(injection_params["index"]))
+                            omf_v1_data_group.create_dataset(
+                                str(injection_params["index"]),
+                                data=snr_sample,
+                            )
 
         finally:
             LOGGER.info("Closing file.")
@@ -359,7 +383,8 @@ class FiltersConsumerGenerate(multiprocessing.Process):
 class FiltersBuildFiles(object):
     def __init__(
             self, output_file_path, df, templates_df, n_injection_samples, n_noise_samples,
-            n_templates, f_low, delta_t, filter_injection_samples, delta_f
+            n_templates, f_low, delta_t, filter_injection_samples, delta_f,
+            trim_output, output_cutoff_low, output_cutoff_high
     ):
         self._output_file_path = output_file_path
         self._df = df
@@ -371,6 +396,9 @@ class FiltersBuildFiles(object):
         self._delta_t = delta_t
         self._filter_injection_samples = filter_injection_samples
         self._delta_f = delta_f
+        self._trim_output = trim_output
+        self._output_cutoff_low = output_cutoff_low
+        self._output_cutoff_high = output_cutoff_high
 
     def run(self):
 
@@ -483,38 +511,72 @@ class FiltersBuildFiles(object):
                         sample_type = next_result["sample_type"],
                     )
 
-                    if injection_params['sample_type'] == "injection_samples":
-                        if injection_params['det_string'] == "h1_strain":
-                            label = "template" + str(injection_params["template_index"]) + \
-                                    ",sample" + str(injection_params["sample_index"])
-                            print("Creating dataset for H1 - " + label)
-                            h1_injection_data_group.create_dataset(label, data=snr_sample)
-                        elif injection_params['det_string'] == "l1_strain":
-                            label = "template" + str(injection_params["template_index"]) + \
-                                    ",sample" + str(injection_params["sample_index"])
-                            print("Creating dataset for L1 - " + label)
-                            l1_injection_data_group.create_dataset(label, data=snr_sample)
+                    if self._trim_output:
+                        if injection_params['sample_type'] == "injection_samples":
+                            if injection_params['det_string'] == "h1_strain":
+                                label = "template" + str(injection_params["template_index"]) + \
+                                        ",sample" + str(injection_params["sample_index"])
+                                print("Creating dataset for H1 - " + label)
+                                h1_injection_data_group.create_dataset(label, data=snr_sample[self._output_cutoff_low:self._output_cutoff_high])
+                            elif injection_params['det_string'] == "l1_strain":
+                                label = "template" + str(injection_params["template_index"]) + \
+                                        ",sample" + str(injection_params["sample_index"])
+                                print("Creating dataset for L1 - " + label)
+                                l1_injection_data_group.create_dataset(label, data=snr_sample[self._output_cutoff_low:self._output_cutoff_high])
+                            else:
+                                label = "template" + str(injection_params["template_index"]) + \
+                                        ",sample" + str(injection_params["sample_index"])
+                                print("Creating dataset for V1 - " + label)
+                                v1_injection_data_group.create_dataset(label, data=snr_sample[self._output_cutoff_low:self._output_cutoff_high])
                         else:
-                            label = "template" + str(injection_params["template_index"]) + \
-                                    ",sample" + str(injection_params["sample_index"])
-                            print("Creating dataset for V1 - " + label)
-                            v1_injection_data_group.create_dataset(label, data=snr_sample)
+                            if injection_params['det_string'] == "h1_strain":
+                                label = "template" + str(injection_params["template_index"]) + \
+                                        ",sample" + str(injection_params["sample_index"])
+                                print("Creating dataset for H1 - " + label)
+                                h1_noise_data_group.create_dataset(label, data=snr_sample[self._output_cutoff_low:self._output_cutoff_high])
+                            elif injection_params['det_string'] == "l1_strain":
+                                label = "template" + str(injection_params["template_index"]) + \
+                                        ",sample" + str(injection_params["sample_index"])
+                                print("Creating dataset for L1 - " + label)
+                                l1_noise_data_group.create_dataset(label, data=snr_sample[self._output_cutoff_low:self._output_cutoff_high])
+                            else:
+                                label = "template" + str(injection_params["template_index"]) + \
+                                        ",sample" + str(injection_params["sample_index"])
+                                print("Creating dataset for V1 - " + label)
+                                v1_noise_data_group.create_dataset(label, data=snr_sample[self._output_cutoff_low:self._output_cutoff_high])
                     else:
-                        if injection_params['det_string'] == "h1_strain":
-                            label = "template" + str(injection_params["template_index"]) + \
-                                    ",sample" + str(injection_params["sample_index"])
-                            print("Creating dataset for H1 - " + label)
-                            h1_noise_data_group.create_dataset(label, data=snr_sample)
-                        elif injection_params['det_string'] == "l1_strain":
-                            label = "template" + str(injection_params["template_index"]) + \
-                                    ",sample" + str(injection_params["sample_index"])
-                            print("Creating dataset for L1 - " + label)
-                            l1_noise_data_group.create_dataset(label, data=snr_sample)
+                        if injection_params['sample_type'] == "injection_samples":
+                            if injection_params['det_string'] == "h1_strain":
+                                label = "template" + str(injection_params["template_index"]) + \
+                                        ",sample" + str(injection_params["sample_index"])
+                                print("Creating dataset for H1 - " + label)
+                                h1_injection_data_group.create_dataset(label, data=snr_sample)
+                            elif injection_params['det_string'] == "l1_strain":
+                                label = "template" + str(injection_params["template_index"]) + \
+                                        ",sample" + str(injection_params["sample_index"])
+                                print("Creating dataset for L1 - " + label)
+                                l1_injection_data_group.create_dataset(label, data=snr_sample)
+                            else:
+                                label = "template" + str(injection_params["template_index"]) + \
+                                        ",sample" + str(injection_params["sample_index"])
+                                print("Creating dataset for V1 - " + label)
+                                v1_injection_data_group.create_dataset(label, data=snr_sample)
                         else:
-                            label = "template" + str(injection_params["template_index"]) + \
-                                    ",sample" + str(injection_params["sample_index"])
-                            print("Creating dataset for V1 - " + label)
-                            v1_noise_data_group.create_dataset(label, data=snr_sample)
+                            if injection_params['det_string'] == "h1_strain":
+                                label = "template" + str(injection_params["template_index"]) + \
+                                        ",sample" + str(injection_params["sample_index"])
+                                print("Creating dataset for H1 - " + label)
+                                h1_noise_data_group.create_dataset(label, data=snr_sample)
+                            elif injection_params['det_string'] == "l1_strain":
+                                label = "template" + str(injection_params["template_index"]) + \
+                                        ",sample" + str(injection_params["sample_index"])
+                                print("Creating dataset for L1 - " + label)
+                                l1_noise_data_group.create_dataset(label, data=snr_sample)
+                            else:
+                                label = "template" + str(injection_params["template_index"]) + \
+                                        ",sample" + str(injection_params["sample_index"])
+                                print("Creating dataset for V1 - " + label)
+                                v1_noise_data_group.create_dataset(label, data=snr_sample)
 
         finally:
             LOGGER.info("Closing file.")
