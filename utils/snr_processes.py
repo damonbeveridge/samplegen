@@ -362,7 +362,7 @@ class FiltersConsumerGenerate(multiprocessing.Process):
             template_freq_series.resize(len(strain_freq_series))
 
             # Cycle the template to match sample series time to SNR series
-            template_freq_series_hp = template_freq_series_hp.cyclic_time_shift(template_freq_series_hp.start_time)
+            template_freq_series = template_freq_series.cyclic_time_shift(template_freq_series.start_time)
 
             # Compute SNR time-series from optimal matched filtering template
             snr_series = matched_filter(template_freq_series,
