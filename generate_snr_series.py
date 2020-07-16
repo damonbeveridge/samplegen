@@ -164,12 +164,6 @@ def main():
     df = h5py.File(input_file_path, 'r')
 
     print('Done!')
-
-    print('Reading in the templates HDF file...', end=' ')
-
-    templates_df = h5py.File(templates_file_path, 'r')
-
-    print('Done!')
     
     # -------------------------------------------------------------------------
     # Create dataframe column to store SNR time-series
@@ -243,6 +237,12 @@ def main():
 
 
     if filter_templates:
+        
+        print('Reading in the templates HDF file...', end=' ')
+
+        templates_df = h5py.File(templates_file_path, 'r')
+
+        print('Done!')
 
         print("Generating SNR time-series for injection and noise samples using a template set...")
 
