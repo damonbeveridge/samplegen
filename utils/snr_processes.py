@@ -106,6 +106,9 @@ class InjectionsConsumerGenerate(multiprocessing.Process):
             # Resize template to work with the sample
             template_freq_series_hp.resize(len(strain_freq_series))
 
+            # Cycle the template to match sample series time to SNR series
+            template_freq_series_hp = template_freq_series_hp.cyclic_time_shift(template_freq_series_hp.start_time)
+
             # Compute SNR time-series from optimal matched filtering template
             snr_series = matched_filter(template_freq_series_hp,
                                         strain_freq_series.astype(complex),
@@ -357,6 +360,9 @@ class FiltersConsumerGenerate(multiprocessing.Process):
             strain_freq_series = strain_sample_time_series.to_frequencyseries(delta_f=delta_f)
 
             template_freq_series.resize(len(strain_freq_series))
+
+            # Cycle the template to match sample series time to SNR series
+            template_freq_series_hp = template_freq_series_hp.cyclic_time_shift(template_freq_series_hp.start_time)
 
             # Compute SNR time-series from optimal matched filtering template
             snr_series = matched_filter(template_freq_series,
