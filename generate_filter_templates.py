@@ -58,7 +58,9 @@ def generate_waveform(static_arguments,
     # Perform the actual simulation with the given parameters
     h_plus, h_cross = get_td_waveform(**simulation_parameters)
 
-    return h_plus, simulation_parameters, h_plus.sample_times
+    start_time = np.copy(float(h_plus.start_time))
+
+    return h_plus, simulation_parameters, h_plus.sample_times, start_time
 
 
 
@@ -196,6 +198,7 @@ if __name__ == '__main__':
     samples = dict(template_samples=[])
     injection_parameters = dict(template_samples=[])
     sample_times = dict(template_samples=[])
+    start_times = dict(template_samples=[])
 
     print('Generating template samples...')
     n_samples = config['n_template_samples']
@@ -316,7 +319,7 @@ if __name__ == '__main__':
     # ---------------------------------------------------------------------
 
     # Separate the samples and the injection parameters
-    samples[sample_type], injection_parameters[sample_type], sample_times[sample_type] = \
+    samples[sample_type], injection_parameters[sample_type], sample_times[sample_type], start_times[sample_type] = \
         zip(*results_list)
 
     print('Sample generation completed!\n')
@@ -370,6 +373,7 @@ if __name__ == '__main__':
         parameter_group.create_dataset("approximant",data=np.copy(injection_parameters[sample_type][i]["approximant"]))
         parameter_group.create_dataset("f_lower",data=np.copy(injection_parameters[sample_type][i]["f_lower"]))
         parameter_group.create_dataset("delta_t",data=np.copy(injection_parameters[sample_type][i]["delta_t"]))
+        parameter_group.create_dataset("start_time",data=np.copy(start_times[sample_type][int(i)]))
 
     print('Done!')
 
