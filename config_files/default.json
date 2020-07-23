@@ -12,6 +12,7 @@
   "n_template_samples": 5,
   "snr_output_cutoff_low": 5,
   "snr_output_cutoff_high": 7,
+  "snr_output_cutoff_variation": 1,
   "output_file_name": "default.hdf",
   "snr_output_file_name": "default_snrs.hdf",
   "template_output_file_name": "default_templates.hdf"
