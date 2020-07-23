@@ -15,6 +15,9 @@ import sys
 import time
 import h5py
 
+from functools import wraps
+from traceback import print_exc
+
 #import multiprocessing
 #import logging
 
@@ -36,18 +39,18 @@ def suppress_broken_pipe_msg(f):
             raise
         except:
             print_exc()
-            exit(1)
+            sys.exit(1)
         finally:
             try:
-                stdout.flush()
+                sys.stdout.flush()
             finally:
                 try:
-                    stdout.close()
+                    sys.stdout.close()
                 finally:
                     try:
-                        stderr.flush()
+                        sys.stderr.flush()
                     finally:
-                        stderr.close()
+                        sys.stderr.close()
     return wrapper
 
 # -----------------------------------------------------------------------------
