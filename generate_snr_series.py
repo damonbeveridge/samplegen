@@ -191,6 +191,10 @@ def main():
     # Store number of templates
     n_templates = config['n_template_samples']
 
+    # Calculate trim samples
+    trim_cutoff_low = config['snr_output_cutoff_low'] * static_arguments["target_sampling_rate"]
+    trim_cutoff_high = config['snr_output_cutoff_high'] * static_arguments["target_sampling_rate"]
+
     # -------------------------------------------------------------------------
     # Compute SNR time-series
     # -------------------------------------------------------------------------
@@ -204,7 +208,10 @@ def main():
                 output_file_path=output_file_path,
                 param_dict = param_dict,
                 df = df,
-                n_samples = n_injection_samples
+                n_samples = n_injection_samples,
+                trim_output = trim_output,
+                trim_cutoff_low = trim_cutoff_low,
+                trim_cutoff_high = trim_cutoff_high
             )
             injections_build_files.run()
 
@@ -241,7 +248,10 @@ def main():
                 f_low = f_low,
                 delta_t = delta_t,
                 filter_injection_samples = filter_injection_samples,
-                delta_f = delta_f
+                delta_f = delta_f,
+                trim_output = trim_output,
+                trim_cutoff_low = trim_cutoff_low,
+                trim_cutoff_high = trim_cutoff_high
             )
             filters_build_files.run()
 
