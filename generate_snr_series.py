@@ -14,6 +14,7 @@ import os
 import sys
 import time
 import h5py
+import random
 
 from functools import wraps
 from traceback import print_exc
@@ -204,6 +205,20 @@ def main():
     trim_cutoff_low = config['snr_output_cutoff_low'] * static_arguments["target_sampling_rate"]
     trim_cutoff_high = config['snr_output_cutoff_high'] * static_arguments["target_sampling_rate"]
     trim_cutoff_variation = config['snr_output_cutoff_variation'] * static_arguments["target_sampling_rate"] / 2
+    inj_low=[]
+    inj_high=[]
+    noise_low=[]
+    noise_high=[]
+    for i in range(n_injection_samples):
+        rand_low = trim_cutoff_low + random.randint(-trim_cutoff_variation,trim_cutoff_variation)
+        rand_high = trim_cutoff_high + random.randint(-trim_cutoff_variation,trim_cutoff_variation)
+        inj_low.append(rand_low)
+        inj_high.append(rand_high)
+    for i in range(n_noise_samples):
+        rand_low = trim_cutoff_low + random.randint(-trim_cutoff_variation,trim_cutoff_variation)
+        rand_high = trim_cutoff_high + random.randint(-trim_cutoff_variation,trim_cutoff_variation)
+        noise_low.append(rand_low)
+        noise_high.append(rand_high)
 
     # -------------------------------------------------------------------------
     # Compute SNR time-series
@@ -220,9 +235,8 @@ def main():
                 df = df,
                 n_samples = n_injection_samples,
                 trim_output = trim_output,
-                trim_cutoff_low = trim_cutoff_low,
-                trim_cutoff_high = trim_cutoff_high,
-                trim_cutoff_variation =trim_cutoff_variation
+                inj_low = inj_low,
+                inj_high = inj_high
             )
             injections_build_files.run()
 
@@ -261,9 +275,10 @@ def main():
                 filter_injection_samples = filter_injection_samples,
                 delta_f = delta_f,
                 trim_output = trim_output,
-                trim_cutoff_low = trim_cutoff_low,
-                trim_cutoff_high = trim_cutoff_high,
-                trim_cutoff_variation =trim_cutoff_variation
+                inj_low = inj_low,
+                inj_high = inj_high,
+                noise_low = noise_low,
+                noise_high = noise_high
             )
             filters_build_files.run()
 
