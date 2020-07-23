@@ -203,6 +203,7 @@ def main():
     # Calculate trim samples
     trim_cutoff_low = config['snr_output_cutoff_low'] * static_arguments["target_sampling_rate"]
     trim_cutoff_high = config['snr_output_cutoff_high'] * static_arguments["target_sampling_rate"]
+    trim_cutoff_variation = config['snr_output_cutoff_variation'] * static_arguments["target_sampling_rate"] / 2
 
     # -------------------------------------------------------------------------
     # Compute SNR time-series
@@ -220,7 +221,8 @@ def main():
                 n_samples = n_injection_samples,
                 trim_output = trim_output,
                 trim_cutoff_low = trim_cutoff_low,
-                trim_cutoff_high = trim_cutoff_high
+                trim_cutoff_high = trim_cutoff_high,
+                trim_cutoff_variation =trim_cutoff_variation
             )
             injections_build_files.run()
 
@@ -260,7 +262,8 @@ def main():
                 delta_f = delta_f,
                 trim_output = trim_output,
                 trim_cutoff_low = trim_cutoff_low,
-                trim_cutoff_high = trim_cutoff_high
+                trim_cutoff_high = trim_cutoff_high,
+                trim_cutoff_variation =trim_cutoff_variation
             )
             filters_build_files.run()
 
