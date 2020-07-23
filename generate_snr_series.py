@@ -97,6 +97,11 @@ def main():
                              'SNRs of all signals using a set of templates.'
                              'Default: True',
                         default=True)
+    parser.add_argument('--trim-output',
+                        help='Boolean expression for whether to trim the'
+                             'SNR time series output.'
+                             'Default: True',
+                        default=True)
 
     # Parse the arguments that were passed when calling this script
     print('Parsing command line arguments...', end=' ')
@@ -106,6 +111,7 @@ def main():
     # Set up shortcut for the command line arguments
     filter_injection_samples=bool(arguments['filter_injection_samples'])
     filter_templates=bool(arguments['filter_templates'])
+    trim_output=bool(arguments['trim_output'])
 
     # -------------------------------------------------------------------------
     # Read in JSON config file specifying the sample generation process
