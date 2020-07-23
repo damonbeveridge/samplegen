@@ -63,6 +63,12 @@ Plots can be generated for both optimal and template based SNR series. The injec
 
 By default, the script is set to plot the optimal SNR series for injection samples, but this can be adjusted by setting `--plot-template-sample` to false. From here you can control whether to plot injection or noise samples with `--plot-injection-sample` (default is True).
 
+### Output Trimming Functionality
+
+It is recommended that the samples generated with `generate_sample.py` are longer than the desired output SNR time-series data so that the output can be trimmed to avoid Fourier effects at the edges. Trimming on the output SNR time-series is controlled by the timestamps (in seconds) of `snr_output_cutoff_low` and `snr_output_cutoff_high` in `default.json`. The trimming functionaly is prevented by setting the command-line argument `--trim-output` to `False` when running `generate_snr_series.py`.
+
+Some use cases my require the output collection of SNR time-series to be offset randomly from one another such that all peaks do not occur at one timestamp in each series. The random distribution is done by shifting the signal along a range (back and forth depending on the random number generated) denoted by the time length `snr_output_cutoff_variation` in `default.json` (if this number is set to 1, each output time-series will be shifted randomly between -0.5 and 0.5 seconds). If you would like to remove this feature, set `snr_output_cutoff_variation` to 0. This functionality is built for people intending to generate training data for producing a well-generalised machine learning model.
+
 <details>
 <summary>Optimal SNR Plot</summary>
 <br>
