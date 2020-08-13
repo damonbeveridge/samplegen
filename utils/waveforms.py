@@ -258,8 +258,8 @@ def get_detector_signals(static_arguments,
     h_plus, h_cross = waveform
 
     # Extract the parameters we will need later for the projection
-    right_ascension = waveform_params['ra']
-    declination = waveform_params['dec']
+    right_ascension = 2*np.pi*waveform_params['ra']
+    declination = np.arcsin(1-2*waveform_params['dec'])
     polarization = waveform_params['polarization']
 
     # Store the detector signals we will get through projection
