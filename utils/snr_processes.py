@@ -61,8 +61,8 @@ class InjectionsConsumerGenerate(multiprocessing.Process):
             mass2=next_task["mass2"]
             spin1z=next_task["spin1z"]
             spin2z=next_task["spin2z"]
-            ra=next_task["ra"]
-            dec=next_task["dec"]
+            ra=2*np.pi*next_task["ra"]
+            dec=np.arcsin(1-2*next_task["dec"])
             coa_phase=next_task["coa_phase"]
             inclination=next_task["inclination"]
             polarization=next_task["polarization"]
