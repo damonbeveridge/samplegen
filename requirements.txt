@@ -2,7 +2,7 @@
 h5py
 lalsuite==6.53
 matplotlib
-numpy==1.13.0
+numpy==1.22.0
 pandas
 PyCBC==1.13.6
 requests
